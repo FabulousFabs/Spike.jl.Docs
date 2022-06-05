@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Guide · Spike.jl</title><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.044/juliamono.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.11/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../"><img src="../assets/logo.png" alt="Spike.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit"><a href="../">Spike.jl</a></span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><span class="tocitem">Manual</span><ul><li class="is-active"><a class="tocitem" href>Guide</a><ul class="internal"><li><a class="tocitem" href="#Installation"><span>Installation</span></a></li><li><a class="tocitem" href="#Magic-models"><span>Magic models</span></a></li><li><a class="tocitem" href="#Adding-neurons"><span>Adding neurons</span></a></li><li><a class="tocitem" href="#Running-a-magic-model"><span>Running a magic model</span></a></li><li><a class="tocitem" href="#Adding-events"><span>Adding events</span></a></li><li><a class="tocitem" href="#Adding-synapses"><span>Adding synapses</span></a></li><li><a class="tocitem" href="#On-expressions"><span>On expressions</span></a></li><li><a class="tocitem" href="#Adding-operations"><span>Adding operations</span></a></li><li><a class="tocitem" href="#Advanced-usage"><span>Advanced usage</span></a></li></ul></li><li><a class="tocitem" href="../examples/">Examples</a></li></ul></li><li><a class="tocitem" href="../library/">Library</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Manual</a></li><li class="is-active"><a href>Guide</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Guide</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/FabulousFabs/Spike.jl/blob/main/docs/src/guide.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Guide"><a class="docs-heading-anchor" href="#Guide">Guide</a><a id="Guide-1"></a><a class="docs-heading-anchor-permalink" href="#Guide" title="Permalink"></a></h1><p>Spike allows quick and easy implementations of spiking network models through a lot of flexibility offered by the way it utilises meta-programming for designing models - fortunately, it is also really quite easy to use. The following is a brief introduction.</p><h2 id="Installation"><a class="docs-heading-anchor" href="#Installation">Installation</a><a id="Installation-1"></a><a class="docs-heading-anchor-permalink" href="#Installation" title="Permalink"></a></h2><p>Spike is not currently available as a released package, but may be installed using the Julia package manager. From your Julia REPL, type <code>]</code> to enter the Pkg mode and run</p><pre><code class="language-Julia hljs">  pkg&gt; add https://github.com/FabulousFabs/Spike.jl.git</code></pre><p>That&#39;s it!</p><h2 id="Magic-models"><a class="docs-heading-anchor" href="#Magic-models">Magic models</a><a id="Magic-models-1"></a><a class="docs-heading-anchor-permalink" href="#Magic-models" title="Permalink"></a></h2><p>Generally speaking, all Spike models boil down to three fundamental components: <a href="../library/#Spike.Model"><code>Model</code></a>s that contain and track all specifications, <a href="../library/#Spike.NeuronGroup"><code>NeuronGroup</code></a>s and <a href="../library/#Spike.Synapses"><code>Synapses</code></a> where the former contains a collection of neurons governed by the same equations, whereas the latter is much the same but for synapses between <a href="../library/#Spike.NeuronGroup"><code>NeuronGroup</code></a>s.</p><p>To make things a bit easier, we generally don&#39;t have to specify <a href="../library/#Spike.Model"><code>Model</code></a> structures ourselves. Instead, we can <a href="../library/#Spike.cast_magic-Tuple{}"><code>cast_magic()</code></a> and let Spike figure out the rest behind the scenes for us. Once we have cast magic, we can specify structures and connections in our main file.</p><h2 id="Adding-neurons"><a class="docs-heading-anchor" href="#Adding-neurons">Adding neurons</a><a id="Adding-neurons-1"></a><a class="docs-heading-anchor-permalink" href="#Adding-neurons" title="Permalink"></a></h2><p>For starters, let us create some neurons, then:</p><pre><code class="language-Julia hljs">using Spike;
+
+# Casting magic ensures that the back-end will put together a model structure for us.
+cast_magic();
+
+# Next, let&#39;s actually specify some neurons
+population = NeuronGroup(N = 10, method = euler, events = Dict(),
+                         eq = :(dv_dt = (.-(v - E_L) .+ I) ./ 𝜏_v;
+                                I_t = 3e-3 .* rand(N) ./ dt;),
+                         parameters = Dict(:v =&gt; zeros(10),
+                                           :v_th =&gt; ones(10),
+                                           :v_reset =&gt; -0.1 * ones(10),
+                                           :E_L =&gt; zeros(10),
+                                           :I =&gt; zeros(10),
+                                           :𝜏_v =&gt; 100e-3 * ones(10)));</code></pre><p>Now, the most pertinent part here is the specification of a set of equations that will govern the behaviour of these neurons. We specified these equations as an expression and, as we see through the use of <code>rand(N)</code>, we can also use regular Julia functions in them if need be. Similarly, however, we also need to obey to Julia&#39;s way of writing maths. For example, all parameters (e.g., <code>v</code>, <code>E_L</code>, ...) are vectors and, as such, we need to use dot notation <code>.-</code>, <code>.+</code>, <code>.*</code>, <code>./</code> in our equations, too. More on expressions and how to phrase your equations later.</p><h2 id="Running-a-magic-model"><a class="docs-heading-anchor" href="#Running-a-magic-model">Running a magic model</a><a id="Running-a-magic-model-1"></a><a class="docs-heading-anchor-permalink" href="#Running-a-magic-model" title="Permalink"></a></h2><p>For now, we have 10 neurons in our group who receive random input current. Let&#39;s simulate this population and see what some of the currents and voltages look like. To do this, we will use a <a href="../library/#Spike.StateMonitor"><code>StateMonitor</code></a> and run where, given that we do not supply a <a href="../library/#Spike.Model"><code>Model</code></a> structure, run will build a magic network from our scope for us. Like so:</p><pre><code class="language-Julia hljs">...
+
+# Let&#39;s add a monitor that measures v and I
+state_monitor = Spike.StateMonitor(obj = population, vars = [:v, :I]);
+
+# Let&#39;s do a magic run
+Spike.run(; T = 1.0, dt = 1e-3);
+
+# ...and plot the results for our neurons
+using Plots;
+plot(repeat(state_monitor.t, outer = [1, 10]), transpose(state_monitor.states[:I]))
+plot(repeat(state_monitor.t, outer = [1, 10]), transpose(state_monitor.states[:v]))
+end</code></pre><p>Nice, that was pretty easy! Okay, so the input is all over the place, as we expected. But wait, what&#39;s going on with the membrane potential? Why isn&#39;t it being reset but keeps on rising?</p><h2 id="Adding-events"><a class="docs-heading-anchor" href="#Adding-events">Adding events</a><a id="Adding-events-1"></a><a class="docs-heading-anchor-permalink" href="#Adding-events" title="Permalink"></a></h2><p>Well, it turns out that we specified <code>events = Dict()</code> for our neurons. We can create arbitrary events that will govern some conditional behaviour of our neurons. Note that, importantly, events are also always broadcast to synapses. More on this later. For the time being, let us go back to our neuron group and add some events to our call, like so:</p><pre><code class="language-Julia hljs">...
+
+# let&#39;s change the definition of our neuron group
+population = NeuronGroup(N = 10, method = euler,
+                         eq = :(dv_dt = (.-(v - E_L) .+ I) ./ 𝜏_v;
+                                I_t = 3e-3 .* rand(N) ./ dt;),
+                         events = Dict(:spike =&gt; (:(v .&gt; v_th), :(v = v_reset;))),
+                         parameters = Dict(:v =&gt; zeros(10),
+                                           :v_th =&gt; ones(10),
+                                           :v_reset =&gt; -0.1 * ones(10),
+                                           :E_L =&gt; zeros(10),
+                                           :I =&gt; zeros(10),
+                                           :𝜏_v =&gt; 100e-3 * ones(10)));
+
+...
+
+# let&#39;s also use an event monitor to track spikes directly
+spike_monitor = EventMonitor(obj = population, event = :spike);
+
+...
+
+# and let&#39;s also plot them
+scatter(spike_monitor.t, spike_monitor.i, markershape = :vline)</code></pre><p>That&#39;s more like it, we have quite some spiking behaviour now. Very nice!</p><h2 id="Adding-synapses"><a class="docs-heading-anchor" href="#Adding-synapses">Adding synapses</a><a id="Adding-synapses-1"></a><a class="docs-heading-anchor-permalink" href="#Adding-synapses" title="Permalink"></a></h2><p>Now, let&#39;s move on and create a slightly more complex model where groups of neurons actually communicate with each other. To do this, let us change our population such that its input currents are no longer random but simply decay in time. This means adjusting</p><pre><code class="language-Julia hljs">population = NeuronGroup(N = 100, method = euler,
+                         eq = :(dv_dt = (.-(v - E_L) .+ I) ./ 𝜏_v;
+                                dI_dt = .-I ./ 𝜏_I;),
+                         events = Dict(:spike =&gt; (:(v .&gt; v_th), :(v = v_reset;))),
+                         parameters = Dict(:v =&gt; zeros(100),
+                                           :v_th =&gt; ones(100),
+                                           :v_reset =&gt; -0.1 * ones(100),
+                                           :E_L =&gt; zeros(100),
+                                           :I =&gt; zeros(100),
+                                           :𝜏_v =&gt; 50e-3 * ones(100),
+                                           :𝜏_I =&gt; 10e-3 * ones(100)));
+pop_states = StateMonitor(obj = population, vars = [:v, :I]);
+pop_spikes = EventMonitor(obj = population, event = :spike);</code></pre><p>Excellent. Notice that we also increased the population size and adjusted some parameters to make it more interesting. Next, let&#39;s create a second population that we will use as a random spiking population, like so:</p><pre><code class="language-Julia hljs">rd_spikers = NeuronGroup(N = 100, method = euler,
+                         eq = :(v_t = rand(N);),
+                         events = Dict(:spike =&gt; (:(v .&gt; p), :(v = v_reset;))),
+                         parameters = Dict(:v =&gt; zeros(100),
+                                           :v_reset =&gt; zeros(100),
+                                           :p =&gt; 0.975 * ones(100)));
+rds_spikes = EventMonitor(obj = rd_spikers, event = :spike);</code></pre><p>And now, let&#39;s create some <a href="../library/#Spike.Synapses"><code>Synapses</code></a> like so:</p><pre><code class="language-Julia hljs">forward = Synapses(pre = rd_spikers, post = population,
+                   cond = :((i .- 25) .&lt;= j .&amp;&amp; (i .+ 25) .&gt;= j),
+                   prob = 0.25,
+                   on_pre = Dict(:spike =&gt; :(post_I = post_I .+ w;)),
+                   parameters = Dict(:w =&gt; rand));</code></pre><p>Now, there are a few important things to take note of here:</p><ol><li>We are using an expression, again, as a condition for creating synapses that, effectively, amounts to a kernel of size 50.</li><li>On top of that, we are asking that synapses be created with a probability of .25 only, effectively yielding 12-13 synapses per neuron.</li><li>We are now using the event <code>:spike</code> that we created earlier and are using <code>on_pre</code> to create a conditional equation. In this equation, we have full access to all parameters of the synapse, the pre- and the postsynaptic neuron by using no prefix, <code>pre_*</code> or <code>post_*</code>, respectively. Note that <code>on_post</code> is also available.</li><li>We are specifying parameters for the synapse, but we are using a new syntax that is not vectorised that applies only to synapses. Parameters can either be of type <code>Number</code> or <code>Function</code>.</li><li>If we wanted to, we could also specify <code>eq</code> and <code>method</code> for these synapses, just like we did for neurons.</li></ol><p>For completeness sake, here is the full example so far:</p><pre><code class="language-Julia hljs">using Spike;
+using Plots;
+
+# Casting magic ensures that the back-end will put together a model structure for us.
+cast_magic();
+
+# Let&#39;s create some random spikers
+rd_spikers = NeuronGroup(N = 100, method = euler,
+                         eq = :(v_t = rand(N);),
+                         events = Dict(:spike =&gt; (:(v .&gt; p), :(v = v_reset;))),
+                         parameters = Dict(:v =&gt; zeros(100),
+                                           :v_reset =&gt; zeros(100),
+                                           :p =&gt; 0.975 * ones(100)));
+
+# Let&#39;s create our target population
+population = NeuronGroup(N = 100, method = euler,
+                         eq = :(dv_dt = (.-(v - E_L) .+ I) ./ 𝜏_v;
+                                dI_dt = .-I ./ 𝜏_I;),
+                         events = Dict(:spike =&gt; (:(v .&gt; v_th), :(v = v_reset;))),
+                         parameters = Dict(:v =&gt; zeros(100),
+                                           :v_th =&gt; ones(100),
+                                           :v_reset =&gt; -0.1 * ones(100),
+                                           :E_L =&gt; zeros(100),
+                                           :I =&gt; zeros(100),
+                                           :𝜏_v =&gt; 50e-3 * ones(100),
+                                           :𝜏_I =&gt; 10e-3 * ones(100)));
+
+# And let&#39;s add some synapses
+forward = Synapses(pre = rd_spikers, post = population,
+                   cond = :((i .- 25) .&lt;= j .&amp;&amp; (i .+ 25) .&gt;= j),
+                   prob = 0.25,
+                   on_pre = Dict(:spike =&gt; :(post_I = post_I .+ w;)),
+                   parameters = Dict(:w =&gt; rand));
+
+# Let&#39;s add a monitor that measures v and I
+pop_states = StateMonitor(obj = population, vars = [:v, :I]);
+pop_spikes = EventMonitor(obj = population, event = :spike);
+rds_spikes = EventMonitor(obj = rd_spikers, event = :spike);
+
+# Let&#39;s do a magic run
+Spike.run(; T = 1.0, dt = 1e-3);
+
+# ...and plot the results for our neurons
+plot(repeat(pop_states.t, outer = [1, 10]), transpose(pop_states.states[:I]))
+plot(repeat(pop_states.t, outer = [1, 10]), transpose(pop_states.states[:v]))
+scatter(rds_spikes.t, rds_spikes.i, markershape = :vline)
+scatter(pop_spikes.t, pop_spikes.i, markershape = :vline)</code></pre><p>Before we move on, feel free to toy with this example a little bit to familiarise yourself with these basic functions.</p><h2 id="On-expressions"><a class="docs-heading-anchor" href="#On-expressions">On expressions</a><a id="On-expressions-1"></a><a class="docs-heading-anchor-permalink" href="#On-expressions" title="Permalink"></a></h2><p>There are a couple more rules to follow when writing expressions that have not been mentioned yet and should now be mentioned (perhaps you have even discovered some of them while playing around with the model above).</p><ul><li>Expressions can have one of four forms:<ol><li>differential equations: <code>dx_dt = .- x ./ 𝜏;</code></li><li>linear equations: <code>x_t = rand(N) .* y;</code></li><li>assignment: <code>x = x_r;</code></li><li>conditional: <code>x .== y</code></li></ol></li><li>Subexpressions should always be terminated with a semicolon.</li><li>Currently, only <code>eq::Expr</code> parameters (i.e., in <a href="../library/#Spike.NeuronGroup"><code>NeuronGroup</code></a> and <a href="../library/#Spike.Synapses"><code>Synapses</code></a>) support differential equations. Hooks, like <code>on_pre</code>, for example, do not.</li></ul><p>With that in mind, let&#39;s move to the final section of this introduction.</p><h2 id="Adding-operations"><a class="docs-heading-anchor" href="#Adding-operations">Adding operations</a><a id="Adding-operations-1"></a><a class="docs-heading-anchor-permalink" href="#Adding-operations" title="Permalink"></a></h2><p>Finally, let&#39;s bring it all together. Say we want to have some kind of time-varying input to our model that we simulated otherwise (for example, we are simulating an agent&#39;s decision in an environment). To do this, we will need to be able to run our model in parallel to our simulation. We can do this by using an <a href="../library/#Spike.Operation"><code>Operation</code></a>. Take the following model, for example:</p><pre><code class="language-Julia hljs">using Spike;
+using Plots;
+
+# Casting magic ensures that the back-end will put together a model structure for us. # hide
+cast_magic();
+
+# Let&#39;s create our target population
+N_pop = 100
+population = NeuronGroup(N = N_pop, method = euler,
+                         eq = :(dv_dt = (.-(v - E_L) .+ I) ./ 𝜏_v;
+                                dI_dt = .-I ./ 𝜏_I;),
+                         events = Dict(:spike =&gt; (:(v .&gt; v_th), :(v = v_reset;))),
+                         parameters = Dict(:v =&gt; zeros(N_pop),
+                                           :v_th =&gt; ones(N_pop),
+                                           :v_reset =&gt; -0.1 * ones(N_pop),
+                                           :E_L =&gt; zeros(N_pop),
+                                           :I =&gt; zeros(N_pop),
+                                           :𝜏_v =&gt; 50e-3 * ones(N_pop),
+                                           :𝜏_I =&gt; 10e-3 * ones(N_pop)));
+
+# Let&#39;s capture spikes
+pop_spikes = EventMonitor(obj = population, event = :spike);
+
+# An arbitrary function
+function my_function()
+       # here&#39;s where I can do something else, at the same clock speed as the model
+       # and then feed something back into the model.
+       # for example:
+       global population;
+       population.parameters[:I] .= 5 .* rand(population.N);
+end
+
+# register the operation
+callback = Operation(op = my_function);
+
+# Run everything
+Spike.run(; T = 1.0, dt = 1e-3);
+
+# ...and plot the results for our neurons
+scatter(pop_spikes.t, pop_spikes.i, markershape = :vline)</code></pre><p>Now, we can easily simulate the model and, for example, an agent in an environment whose actions the model determines at the same time.</p><h2 id="Advanced-usage"><a class="docs-heading-anchor" href="#Advanced-usage">Advanced usage</a><a id="Advanced-usage-1"></a><a class="docs-heading-anchor-permalink" href="#Advanced-usage" title="Permalink"></a></h2><p>For more information, refer to the <a href="../examples/#Examples">Examples</a> or <a href="../library/#Library">Library</a>.</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../">« Home</a><a class="docs-footer-nextpage" href="../examples/">Examples »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.19 on <span class="colophon-date" title="Monday 6 June 2022 00:38">Monday 6 June 2022</span>. Using Julia version 1.7.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
